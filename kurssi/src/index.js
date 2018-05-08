@@ -22,11 +22,23 @@ const Sisalto = ({osat}) => {
   )
 }
 
+const Yhteensa = ({osat}) => {
+  const tehtavat = osat.reduce((summa, osa) => {
+    return summa + osa.tehtavia
+  }, 0)
+  return(
+    <div>
+      Yhteensä {tehtavat} tehtävää
+    </div>
+  )
+}
+
 
 const Kurssi = ({kurssi}) =>
   <div>
     <Otsikko nimi={kurssi.nimi}/>
     <Sisalto osat={kurssi.osat}/>
+    <Yhteensa osat={kurssi.osat}/>
   </div>
 
 const App = () => {
@@ -44,6 +56,10 @@ const App = () => {
       {
         nimi: 'Komponenttien tila',
         tehtavia: 14
+      },
+      {
+        nimi: 'Redux',
+        tehtavia: 7
       }
     ]
   }
