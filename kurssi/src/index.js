@@ -1,7 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-const luoId = () => Math.floor(Math.random() * 999999)
 
 const Otsikko = (props) =>
   <div>
@@ -14,7 +13,7 @@ const Osa = (props) =>
   </p>
 
 const Sisalto = ({osat}) => {
-  const rivit = osat.map(osa => <Osa key={luoId()} osa={osa.nimi} tehtavia={osa.tehtavia} />)
+  const rivit = osat.map(osa => <Osa key={osa.id} osa={osa.nimi} tehtavia={osa.tehtavia} />)
   return (
     <div>
       {rivit}
@@ -41,32 +40,61 @@ const Kurssi = ({kurssi}) =>
     <Yhteensa osat={kurssi.osat}/>
   </div>
 
+const Opetusohjelma = ({kurssit}) => {
+  const rivit = kurssit.map(kurssi => <Kurssi key={kurssi.id} kurssi={kurssi}/>)
+  return (
+    <div>
+      <Otsikko nimi="Opetusohjelma"/>
+      {rivit}
+    </div>
+  )
+}
+
+
 const App = () => {
-  const kurssi = {
-    nimi: 'Half Stack -sovelluskehitys',
-    osat: [
+  const kurssit = [
       {
-        nimi: 'Reactin perusteet',
-        tehtavia: 10
+        nimi: 'Half Stack -sovelluskehitys',
+        id: 1,
+        osat: [
+          {
+            nimi: 'Reactin perusteet',
+            tehtavia: 10,
+            id: 1
+          },
+          {
+            nimi: 'Tiedonvälitys propseilla',
+            tehtavia: 7,
+            id: 2
+          },
+          {
+            nimi: 'Komponenttien tila',
+            tehtavia: 14,
+            id: 3
+          }
+        ]
       },
       {
-        nimi: 'Tiedonvälitys propseilla',
-        tehtavia: 7
-      },
-      {
-        nimi: 'Komponenttien tila',
-        tehtavia: 14
-      },
-      {
-        nimi: 'Redux',
-        tehtavia: 7
+        nimi: 'Node.js',
+        id: 2,
+        osat: [
+          {
+            nimi: 'Routing',
+            tehtavia: 3,
+            id: 1
+          },
+          {
+            nimi: 'Middlewaret',
+            tehtavia: 7,
+            id: 2
+          }
+        ]
       }
     ]
-  }
 
   return (
     <div>
-      <Kurssi kurssi={kurssi}/>
+      <Opetusohjelma kurssit={kurssit}/>
     </div>
   )
 }
