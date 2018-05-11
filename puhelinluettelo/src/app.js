@@ -1,5 +1,7 @@
 import React from 'react';
 import Persons from './components/Persons'
+import Filter from './components/Filter'
+import Form from './components/Form'
 
 
 class App extends React.Component {
@@ -61,22 +63,9 @@ class App extends React.Component {
     return (
       <div>
         <h2>Puhelinluettelo</h2>
-        <div>
-          rajaa näytettäviä <input value={this.state.newSearch} name="Search" onChange={this.handleInputChange}/>
-        </div>
-        <h3>Lisää uusi</h3>
-        <form onSubmit={this.addPerson}>
-          <div>
-            nimi: <input value={this.state.newName} name="Name" onChange={this.handleInputChange} />
-          <div>
-          </div>
-            puhelinnumero <input value={this.state.newNumber} name="Number" onChange={this.handleInputChange} />
-          </div>
-          <div>
-            <button type="submit">lisää</button>
-          </div>
-        </form>
-        <h2>Numerot</h2>
+        <Filter value={this.state.newSearch} handleChange={this.handleInputChange}/>
+        <Form onSubmit={this.addPerson} newName={this.state.newName} newNumber={this.state.newNumber} handleChange={this.handleInputChange} />
+        <h3>Numerot</h3>
         <Persons persons={this.namesToShow()} />
       </div>
     )
