@@ -7,10 +7,15 @@ class App extends React.Component {
     super(props)
     this.state = {
       persons: [
-        { name: 'Arto Hellas', number: '040-123123'}
+        { name: 'Arto Hellas', number: '040-123456' },
+        { name: 'Martti Tienari', number: '040-123456' },
+        { name: 'Arto Järvinen', number: '040-123456' },
+        { name: 'Lea Kutvonen', number: '040-123456' }
       ],
       newName: '',
-      newNumber: ''
+      newNumber: '',
+      newSearch: ''
+
     }
   }
 
@@ -38,16 +43,28 @@ class App extends React.Component {
       )
   }
 
-  handleInputChange = (event) => {
+  handleInputChange = (event) =>
     this.setState({
       ['new'+ event.target.name]: event.target.value
     })
+
+  namesToShow = () => {
+    const search = this.state.newSearch.toUpperCase()
+    return(
+      this.state.persons.filter(person =>
+        person.name.toUpperCase().includes(search))
+    )
   }
+
 
   render() {
     return (
       <div>
         <h2>Puhelinluettelo</h2>
+        <div>
+          rajaa näytettäviä <input value={this.state.newSearch} name="Search" onChange={this.handleInputChange}/>
+        </div>
+        <h3>Lisää uusi</h3>
         <form onSubmit={this.addPerson}>
           <div>
             nimi: <input value={this.state.newName} name="Name" onChange={this.handleInputChange} />
@@ -60,7 +77,7 @@ class App extends React.Component {
           </div>
         </form>
         <h2>Numerot</h2>
-        <Persons persons={this.state.persons} />
+        <Persons persons={this.namesToShow()} />
       </div>
     )
   }
