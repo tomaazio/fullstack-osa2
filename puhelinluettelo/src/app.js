@@ -20,11 +20,20 @@ class App extends React.Component {
       name: this.state.newName
     }
     const persons = this.state.persons.concat(personObject)
-    this.setState({
-      persons: persons,
-      newName: ''
-    })
+    this.isPersonOnTheList(personObject, persons)
+  }
 
+  isPersonOnTheList = (newPerson, persons) => {
+    this.state.persons.find(person =>
+      person.name.toUpperCase() === newPerson.name.toUpperCase()) ?
+      (
+        alert('Person already on list')
+      ) : (
+        this.setState({
+          persons: persons,
+          newName: ''
+        })
+      )
   }
 
   handleInputChange = (event) => {
