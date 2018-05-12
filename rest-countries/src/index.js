@@ -10,7 +10,8 @@ class App extends React.Component{
     super(props)
     this.state = {
       countries: [],
-      search: ''
+      search: '',
+      clickedCountry: ''
     }
   }
 
@@ -27,11 +28,13 @@ class App extends React.Component{
 
   handleChange = (event) =>
       this.setState({
-        search: event.target.value
+        search: event.target.value,
+        clickedCountry: ''
       })
 
   showCountries = () => {
     const countries = this.filterCountries()
+
     return (
       //tarkista onko hakukenttä tyhjä. Jos on, palauta tyhjä lista.
       this.state.search === '' ?
@@ -47,9 +50,23 @@ class App extends React.Component{
             countries.map(country => <Country key={country.name} country={country}/>)
            :
             //Muutoin palauta hakua vastaavien maiden nimet
-            countries.map(country => <div key={country.name}>{country.name}</div>)
+            countries.map(country =>
+              <div onClick={() => this.setState({clickedCountry: country.name})}
+                    key={country.name}>{country.name}
+              </div>
+            )
         )
       )
+    )
+  }
+
+  showClickedCountry = () => {
+    const country = this.state.countries.filter(country =>
+      country.name === this.state.clickedCountry)
+    return(
+      this.state.clickedCountry === '' ?
+      [] : country.map(country =>
+        <Country key={country.name} country={country}/>)
     )
   }
 
@@ -70,6 +87,7 @@ class App extends React.Component{
         <br/>
         <div>
           {this.showCountries()}
+          {this.showClickedCountry()}
         </div>
       </div>
     )
