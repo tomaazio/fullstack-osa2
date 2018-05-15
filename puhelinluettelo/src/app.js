@@ -13,7 +13,6 @@ class App extends React.Component {
       newName: '',
       newNumber: '',
       newSearch: ''
-
     }
   }
 
@@ -33,39 +32,56 @@ class App extends React.Component {
     const personObject = {
       name: this.state.newName,
       number: this.state.newNumber,
-      id: Number((Math.random()*9999999999).toFixed(0))
+      id: Number((Math.random()*9999).toFixed(0))
     }
-    const isPersonOnList = this.state.persons.find(person =>
+    const personOnTheList = this.state.persons.find(person =>
       person.name.toUpperCase() === personObject.name.toUpperCase().trim())
 
     return (
-      isPersonOnList ?
-        (
-          alert('Henkilö on jo luettelossa'),
-           this.setState({newName: '', newNumber: ''})
-        ) : (
-          PersonService
-            .create(personObject)
-            .then(persons => {
-              this.setState((prevState) => {
-                return {
-                  persons: prevState.persons.concat(personObject),
-                  newName: '',
-                  newNumber: ''
-                 }
-              })
-            })
-            .catch(error => console.log('person not created'))
-        )
+      personOnTheList ?
+      (
+        window.confirm(`${personObject.name} on jo luettelossa, korvataanko vanha numero uudella?`) ?
+        this.updateNumber({...personObject, id: personOnTheList.id}) : []
+      ) : (
+        this.createPerson(personObject)
+      )
     )
   }
+
+  createPerson = (person) =>
+    PersonService
+      .create(person)
+      .then(persons => {
+        this.setState((prevState) => {
+          return {
+            persons: prevState.persons.concat(person),
+            newName: '',
+            newNumber: ''
+           }
+        })
+      })
+      .catch(error => console.log(error))
+
+  updateNumber = (person) =>
+    PersonService
+      .update(person.id, person)
+      .then(changedPerson => {
+        const persons = this.state.persons.filter(n => n.id !== person.id)
+        this.setState({
+          persons: persons.concat(changedPerson).sort((p1, p2) => p1.id - p2.id),
+          newName: '',
+          newNumber: ''
+        })
+      })
+      .catch(error => console.log(error))
+
 
   handleInputChange = (event) =>
     this.setState({
       ['new'+ event.target.name]: event.target.value
     })
 
-  handleClick = (id, name) => () => {
+  handleDeleteClick = (id, name) => () => {
     if (window.confirm(`poistetaanko ${name}`)) {
       PersonService
         .destroy(id)
@@ -92,13 +108,11 @@ class App extends React.Component {
           {this.namesToShow().map(person =>
              <Person
                 key={person.name}
-                handleClick={this.handleClick(person.id, person.name)}
+                handleClick={this.handleDeleteClick(person.id, person.name)}
                 person={person}/>
               )}
         </tbody>
       </table>
-
-
 
   render() {
     return (
