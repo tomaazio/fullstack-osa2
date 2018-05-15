@@ -69,7 +69,7 @@ class App extends React.Component {
     if (window.confirm(`poistetaanko ${name}`)) {
       PersonService
         .destroy(id)
-        .then(persons => {
+        .then(() => {
           this.setState((prevState) => {
             return {persons: prevState.persons.filter(person => person.id !== id)}
           })

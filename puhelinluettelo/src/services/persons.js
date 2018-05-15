@@ -14,7 +14,6 @@ const create = (newObject) =>
 const destroy = (id) =>
   axios
     .delete(`${baseUrl}/${id}`)
-    .then(res => res.data)
 
 
 export default {getAll, create, destroy}
