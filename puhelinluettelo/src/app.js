@@ -2,7 +2,7 @@ import React from 'react';
 import Persons from './components/Persons'
 import Filter from './components/Filter'
 import Form from './components/Form'
-import axios from 'axios'
+import PersonService from './services/persons'
 
 
 class App extends React.Component {
@@ -18,13 +18,14 @@ class App extends React.Component {
   }
 
   componentDidMount(){
-    axios
-      .get('http://localhost:3001/persons')
-      .then(res => {
+    PersonService
+      .getAll()
+      .then(persons => {
         this.setState({
-          persons: res.data
+          persons: persons
         })
       })
+      .catch(error => console.log('fail'))
   }
 
   addPerson = (event) => {
@@ -33,21 +34,21 @@ class App extends React.Component {
       name: this.state.newName,
       number: this.state.newNumber
     }
-    const persons = this.state.persons.concat(personObject)
-    this.isPersonOnTheList(personObject, persons)
-  }
+    const isPersonOnList = this.state.persons.find(person =>
+      person.name.toUpperCase() === personObject.name.toUpperCase())
 
-  isPersonOnTheList = (newPerson, persons) => {
-    this.state.persons.find(person =>
-      person.name.toUpperCase() === newPerson.name.toUpperCase()) ?
+    isPersonOnList ?
       (
-        alert('Person already on list')
+        alert('Henkilö on jo luettelossa')
       ) : (
-        this.setState({
-          persons: persons,
-          newName: '',
-          newNumber: ''
-        })
+        PersonService
+          .create(personObject)
+          .then(persons => {
+            this.setState((prevState) => {
+              return { persons: prevState.persons.concat(personObject) }
+            })
+          })
+          .catch(error => console.log('person not created'))
       )
   }
 
