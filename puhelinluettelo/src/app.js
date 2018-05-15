@@ -90,7 +90,7 @@ class App extends React.Component {
       })
       .catch(error => {
         this.setState({
-          message: `henkilö ${person} on jo valitettavasti poistettu palvelimelta`,
+          message: `henkilö on jo valitettavasti poistettu palvelimelta`,
           persons: this.state.persons.filter(p => p.id !== person.id)
         })
         this.removeNotification()
