@@ -3,6 +3,7 @@ import Filter from './components/Filter'
 import Form from './components/Form'
 import PersonService from './services/persons'
 import Person from './components/Person'
+import Notification from './components/Notification'
 
 
 class App extends React.Component {
@@ -12,7 +13,8 @@ class App extends React.Component {
       persons: [],
       newName: '',
       newNumber: '',
-      newSearch: ''
+      newSearch: '',
+      message: null
     }
   }
 
@@ -41,7 +43,7 @@ class App extends React.Component {
       personOnTheList ?
       (
         window.confirm(`${personObject.name} on jo luettelossa, korvataanko vanha numero uudella?`) ?
-        this.updateNumber({...personObject, id: personOnTheList.id}) : []
+        this.updateNumber({...personObject, id: personOnTheList.id}) : null
       ) : (
         this.createPerson(personObject)
       )
@@ -56,11 +58,22 @@ class App extends React.Component {
           return {
             persons: prevState.persons.concat(person),
             newName: '',
-            newNumber: ''
+            newNumber: '',
+            message: `lisättiin ${person.name}`
            }
         })
+        setTimeout(() => {
+          this.setState({message: null})
+        }, 5000)
       })
-      .catch(error => console.log(error))
+      .catch(error => {
+        this.setState({
+          newName: '',
+          newNumber: '',
+          message: `henkilön lisäys epäonnistui`
+        })
+        this.removeNotification()
+      })
 
   updateNumber = (person) =>
     PersonService
@@ -68,12 +81,20 @@ class App extends React.Component {
       .then(changedPerson => {
         const persons = this.state.persons.filter(n => n.id !== person.id)
         this.setState({
-          persons: persons.concat(changedPerson).sort((p1, p2) => p1.id - p2.id),
+          persons: persons.concat(changedPerson),
           newName: '',
-          newNumber: ''
+          newNumber: '',
+          message: `Henkilön ${person.name} numero päivitetty`
         })
+        this.removeNotification()
       })
-      .catch(error => console.log(error))
+      .catch(error => {
+        this.setState({
+          message: `henkilö ${person} on jo valitettavasti poistettu palvelimelta`,
+          persons: this.state.persons.filter(p => p.id !== person.id)
+        })
+        this.removeNotification()
+      })
 
 
   handleInputChange = (event) =>
@@ -87,11 +108,26 @@ class App extends React.Component {
         .destroy(id)
         .then(() => {
           this.setState((prevState) => {
-            return {persons: prevState.persons.filter(person => person.id !== id)}
+            return {
+              persons: prevState.persons.filter(person => person.id !== id),
+              message: `${name} poistettu luettelosta`
+            }
           })
+          this.removeNotification()
         })
-        .catch(error => console.log(error))
+        .catch(error => {
+          this.setState({
+            message: `henkilö ${name} poisto epäonnistui`,
+          })
+          this.removeNotification()
+        })
     }
+  }
+
+  removeNotification = () => {
+    setTimeout(() => {
+      this.setState({message: null})
+    }, 5000)
   }
 
   namesToShow = () => {
@@ -122,6 +158,7 @@ class App extends React.Component {
         <Form onSubmit={this.addPerson} newName={this.state.newName} newNumber={this.state.newNumber} handleChange={this.handleInputChange} />
         <h3>Numerot</h3>
         {this.showPersons()}
+        <Notification message={this.state.message}/>
       </div>
     )
   }
